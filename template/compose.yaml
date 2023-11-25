@@ -1,0 +1,68 @@
+---
+version: "3"
+name: "template"
+
+x-compact-logging:
+  &compact
+  options:
+    max-file: "5"
+    max-size: "25M"
+    compress: "true"
+
+x-regular-logging:
+  &regular
+  options:
+    max-file: "10"
+    max-size: "25M"
+    compress: "true"
+
+services:
+  volume-owner:
+    build:
+      dockerfile_inline: |
+        FROM wyga/success
+        USER ${DEVELOPER:?required}
+        WORKDIR /1
+        WORKDIR /2
+        WORKDIR /3
+        WORKDIR /4
+    image: wyga/volume-owner-${DEVELOPER:?required}
+    volumes:
+      - example:/1
+
+  template:
+    image: wyga/unginx
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    user: ${DEVELOPER:?required}
+    logging: *compact
+    environment:
+      TEMPLATE: "${EXAMPLE_TEMPLATE_VAR:-Hello World}"
+    labels:
+      - wyga.expose=template
+    networks:
+      gateway:
+        priority: 100
+      default:
+        priority: 500
+        aliases:
+          - nginx
+    volumes:
+      - example:/template
+      - type: bind
+        source: ./app
+        target: /app
+        bind:
+          create_host_path: false
+    depends_on:
+      volume-owner:
+        condition: service_completed_successfully
+
+networks:
+  gateway:
+    name: wyga-site
+    external: true
+
+volumes:
+  example:
