@@ -1,3 +1,0 @@
-SERVICE: nginx, example1, example2
-VERSION: 2
-DESCRIPTION: Sample uNginx configurations

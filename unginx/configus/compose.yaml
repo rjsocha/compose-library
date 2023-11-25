@@ -13,12 +13,12 @@ x-common: &common
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
-  user: ${DEVELOPER:?required}
   logging: *compact
 
 x-nginx: &nginx
   <<: *common
   image: wyga/unginx
+  user: ${DEVELOPER:?required}
   networks:
     gateway:
       priority: 100
