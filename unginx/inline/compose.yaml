@@ -1,0 +1,43 @@
+---
+version: "3"
+name: "unginx-inline"
+
+x-compact-logging:
+  &compact
+  options:
+    max-file: "5"
+    max-size: "25M"
+    compress: "true"
+
+services:
+  unginx:
+    build:
+      dockerfile_inline: |
+        # syntax=docker/dockerfile:1.6
+        FROM wyga/unginx
+        COPY <<EOF /config/nginx/http/default
+        server {
+          listen 80;
+          default_type text/plain;
+          return 200 "Hello World!";
+        }
+        EOF
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    user: ${DEVELOPER:?required}
+    logging: *compact
+    labels:
+      - wyga.expose=unginx-inline
+    networks:
+      gateway:
+        priority: 100
+      default:
+        priority: 500
+        aliases:
+          - nginx
+
+networks:
+  gateway:
+    name: wyga-site
+    external: true
