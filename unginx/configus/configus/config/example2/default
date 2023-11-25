@@ -1,0 +1,6 @@
+server {
+  listen 80;
+  server_name example;
+  default_type text/html;
+  return 200 "<h1>Hello World (configus - example 2)</h1>";
+}

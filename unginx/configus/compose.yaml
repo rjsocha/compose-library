@@ -1,0 +1,59 @@
+---
+version: "3"
+name: "unginx-compose"
+
+x-compact-logging:
+  &compact
+  options:
+    max-file: "5"
+    max-size: "25M"
+    compress: "true"
+
+x-common: &common
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  user: ${DEVELOPER:?required}
+  logging: *compact
+
+x-nginx: &nginx
+  <<: *common
+  image: wyga/unginx
+  networks:
+    gateway:
+      priority: 100
+    default:
+      priority: 500
+
+services:
+  configus:
+    build:
+      context: configus
+      dockerfile: Dockerfile
+    <<: *common
+
+  nginx:
+    <<: *nginx
+    environment:
+      CONFIGUS: "nginx"
+    labels:
+      - wyga.expose=nginx-configus
+
+  nginxex1:
+    <<: *nginx
+    environment:
+      CONFIGUS: "example1"
+    labels:
+      - wyga.expose=nginx-configus-ex1
+
+  nginxex2:
+    <<: *nginx
+    environment:
+      CONFIGUS: "example2"
+    labels:
+      - wyga.expose=nginx-configus-ex2
+
+networks:
+  gateway:
+    name: wyga-site
+    external: true
