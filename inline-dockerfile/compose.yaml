@@ -1,0 +1,15 @@
+---
+version: "3"
+name: "inline-dockerfile"
+
+services:
+  inline:
+    build:
+      dockerfile_inline: |
+        # syntax=docker/dockerfile:1.6
+        FROM alpine:3
+        COPY <<EOF /sample.txt
+        inline sample file
+        EOF
+    command: sleep infinity
+    stop_signal: SIGKILL
