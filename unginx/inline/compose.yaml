@@ -15,7 +15,7 @@ services:
       dockerfile_inline: |
         # syntax=docker/dockerfile:1.6
         FROM wyga/unginx
-        COPY <<EOF /config/nginx/http/default
+        COPY <<EOF /config/nginx/site/default
         server {
           listen 80;
           default_type text/plain;
