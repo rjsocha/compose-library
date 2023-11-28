@@ -1,1 +1,1 @@
-:GET default  /config/nginx/http/default
+:GET default  @site/default
